@@ -37,8 +37,8 @@ public class Dictionary {
                 }
                 else {
 
-                    data1.add("dfdsf");
-                    data1.add("Dont have 2 define");
+                    data1.add("ErrorValue");
+                    data1.add("ErrorValue");
                     this.data.put(str, data1);
                 }
 
@@ -82,6 +82,61 @@ public class Dictionary {
         }
         System.out.println("Not have word in Dictionary");
     }
+    public void History(){}
+    public void DeleteWord(String word)  {
+        try {
+            File file = new File("D:\\filename1.txt");
+            file.createNewFile();
+            BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
+            String deleteword = "";
+            for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+                String str = entry.getKey();
+                if (str.contentEquals(word)) {
+                    deleteword= entry.getKey();
+                    break;
+                }
+            }
+            if (deleteword.isEmpty()) {
+                System.out.print("Not have word in dictionary");
+            }
+            else{
+            this.data.remove(deleteword);
+
+                    try {
+                        for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
+                            if (entry1.getValue().get(1) == "Dont have 2 define") {
+                                filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
+                                filewrite.newLine();
+                            } else if (entry1.getValue().get(1)=="Errorvalue") {
+                                filewrite.write(entry1.getKey());
+                                filewrite.newLine();
+                            }else{
+                                filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0) + "|" + entry1.getValue().get(1));
+                                filewrite.newLine();
+                            }
+
+                        }
+
+                        System.out.print("Delete successful");
+                    }catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }finally {
+                        try {
+                            filewrite.close();
+                        }catch(Exception e){ }
+                    }
+                }
+
+
+
+        } catch (IOException e) {
+            System.out.println("Error");
+
+        }
+
+    }
+
 
 
 
@@ -95,12 +150,13 @@ public class Dictionary {
         for (;;) {
             System.out.println("1. Find definition n=by slang word");
             System.out.println("2. Xem");
-            System.out.println("3. Thoát");
+            System.out.println("3. ");
+
 
             do {
                 System.out.println("Bấm số để chọn (1/2/3): ");
                 choiceNumber = scanner.nextInt();
-            } while ((choiceNumber < 1) || (choiceNumber > 3));
+            } while ((choiceNumber < 1) || (choiceNumber > 4));
 
             switch (choiceNumber) {
                 case 1:
@@ -123,6 +179,9 @@ public class Dictionary {
                 case 3:
                     System.out.println("Bạn chọn chức năng thoát! Tạm biệt!");
                     System.exit(0); // thoát chương trình
+                    break;
+                case 4:
+                    d.DeleteWord("Slag");
                     break;
             }
         }

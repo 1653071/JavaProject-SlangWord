@@ -1,4 +1,5 @@
 package com.company;
+import java.awt.event.KeyEvent;
 import java.lang.String;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -71,12 +72,11 @@ public class Dictionary {
 
 
     public String FindByKeyword(String word){
-        String word1= word.toUpperCase();
         //Iterator<Map.Entry<String, ArrayList<String>>> iterator = this.data.entrySet().iterator();
         for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
             String str = entry.getKey();
 
-            if(str.equals(word1)){
+            if(str.equalsIgnoreCase(word )){
                 return entry.getValue().get(0);
 
             }
@@ -88,20 +88,23 @@ public class Dictionary {
     }
     public void FindByDefinition (String word){
         for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-            String str = entry.getValue().get(0);
-            String str1 = entry.getValue().get(1);
-            if(str.contains(word) || str1.contains(word)){
-                String str3= entry.getKey();
-                System.out.println(str3 +"-"+ str );
+            ArrayList<String> data= entry.getValue();
 
+            for (int i=0;i< data.size();i++) {
+                String def=entry.getValue().get(i);
+                if(def.contains(word) ){
+                    String str3= entry.getKey();
+                    System.out.println(entry.getKey() +"-" +entry.getValue().get(i)+ "have definition contain" + word );
+                    break;
+                }
             }
-
         }
-        System.out.println("Not have word in Dictionary");
+
     }
     public void History(String word) throws IOException {
         File file = new File("D:\\1653071_SlangDictionary\\history.txt");
-        BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
+        BufferedWriter filewrite = new BufferedWriter(new FileWriter(file,true));
+        filewrite.newLine();
         filewrite.write(word);
         filewrite.close();
     }
@@ -134,7 +137,12 @@ public class Dictionary {
                                 filewrite.write(entry1.getKey());
                                 filewrite.newLine();
                             }else{
-                                filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0) + "|" + entry1.getValue().get(1));
+
+                                filewrite.write(entry1.getKey() + "`");
+
+                                for (int i=0;i< entry1.getValue().size();i++) {
+                                    filewrite.write("| "+ entry1.getValue().get(i));
+                                }
                                 filewrite.newLine();
                             }
 
@@ -315,34 +323,53 @@ public void QuizFindDefinition (){
 
         int choiceNumber;
         Scanner scanner = new Scanner(System.in);
+        System.out.println("----------------------***----------------------");
+        System.out.println("-------------Welcome my Dictionary-------------");
+        System.out.println("        --------Choose fuction-------");
         for (;;) {
-            System.out.println("1. Find definition n=by slang word");
-            System.out.println("2. Xem");
-            System.out.println("3. ");
+            System.out.println("1. Find Definition");
+            System.out.println("2. Find Slang word relate to definition");
+            System.out.println("3. History");
+            System.out.println("4. Add new Slang word");
+            System.out.println("5. Edit");
+            System.out.println("6. Delete");
+            System.out.println("7. Reset");
+            System.out.println("8. Random");
+
 
 
             do {
-                System.out.println("Bấm số để chọn (1/2/3/4/5/6/7/8/9): ");
+                System.out.println("Input number to choose (1/2/3/4/5/6/7/8): ");
                 choiceNumber = scanner.nextInt();
-            } while ((choiceNumber < 1) || (choiceNumber > 10));
+            } while ((choiceNumber < 1) || (choiceNumber > 8));
 
             switch (choiceNumber) {
                 case 1:
-                    System.out.println("Input word:");
-                    Scanner sc= new Scanner(System.in);
-                    String word = sc.nextLine();
-                    d.History(word);
-                    String str;
-                    str=d.FindByKeyword(word);
-                    System.out.println("Define: " + str);
+                    String word;
+                    System.out.println("-------------Search Definition-------------");
+                    do {
+                        System.out.println("Input word or press enter to out:");
+                        Scanner sc = new Scanner(System.in);
+                        word = sc.nextLine();
+                        d.History(word);
+                        String str;
+                        str = d.FindByKeyword(word);
+                        System.out.println("Define of "+ word + " : " + str);
+                    }while (!word.isEmpty());
+                    System.out.println("Exit function search. ");
                     break;
                 case 2:
-                    System.out.println("Input word:");
+                    String word1;
+
+                    System.out.println("-------------Search Slang Word-------------");
+                    do {
+
+                    System.out.println("Input word or press enter to out:");
                     Scanner sc1= new Scanner(System.in);
-                    String word1 = sc1.nextLine();
+                    word1 = sc1.nextLine();
                     String str1;
                     d.FindByDefinition(word1);
-
+                    }while (!word1.isEmpty());
                     break;
 
                 case 3:
@@ -378,13 +405,44 @@ public void QuizFindDefinition (){
                     d.AddNewWord(slangword,definition,definition2);
                     break;
                 case 5:
-                    d.DeleteWord("SCO");
+
                     break;
                 case 6:
-                    d.resetDefaultSlangword();
+                    System.out.println("---Delete word---");
+                    do {
+                        System.out.println("Input word to delete or press enter to out:");
+                        Scanner sc1= new Scanner(System.in);
+                        word1 = sc1.nextLine();
+                        System.out.println("Are you sure ? yes or no : ");
+                        String choose=sc1.nextLine();
+                        if(choose.equals("yes")) {
+                            d.DeleteWord(word1);
+                        }
+                        else{
+                            System.out.println("Cancel");
+                        }
+                    }while (!word1.isEmpty());
+
+                    break;
+                case 7:
+                    System.out.println("---Reset to default---");
+                    Scanner sc1= new Scanner(System.in);
+                    System.out.println("Are you sure ? yes or no : ");
+                    String choose=sc1.nextLine();
+                    if(choose.equals("yes")) {
+                        d.resetDefaultSlangword();
+                    }
+                    else{
+                        System.out.println("Cancel");
+                    }
+
                     break;
                 case 8:
+                    System.out.println("---Random slang word---");
                     d.randomWord();
+                case 9:
+                    System.exit(0); // thoát chương trình
+                    break;
             }
         }
     }

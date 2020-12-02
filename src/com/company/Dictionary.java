@@ -21,20 +21,35 @@ public class Dictionary {
                     break;
                 }
                 String[] s1;
-                ArrayList data1 = new ArrayList<>();
+                //Integer a =0;
 
-                 if (str.indexOf("`") != -1)  {
+                ArrayList data1 = new ArrayList<>();
+               // for(int i=0; i<=str.length()-1; i++) {
+                //    char u= str.charAt(i);
+                //    String s=Character.toString(u);
+                //    if(s=="|"){
+               //     break;
+               // }
+
+                if ( str.indexOf("`") != -1 ) {
+
 
                     s1 = str.split("[`]");
-                    data1.add(s1[1]);
-                    data1.add("Dont have 2 define");
-                    this.data.put(s1[0], data1);
-                }
-                else if (str.indexOf("|") != -1 && str.indexOf("`") != -1 ) {
-                    s1 = str.split("[`|]");
-                    data1.add(s1[1]);
-                    data1.add(s1[2]);
-                    this.data.put(s1[0], data1);
+
+                    if (s1[1].indexOf("|") != -1 ) {
+                        String[] s2 = s1[1].split("[|]");
+
+                        for (int i = 0; i < s2.length; i++) {
+                            data1.add(s2[i]);
+
+                        }
+                        this.data.put(s1[0], data1);
+                    }
+                    else{
+                        data1.add(s1[1]);
+                        data1.add("Dont have 2 define");
+                        this.data.put(s1[0], data1);
+                    }
                 }
                 else {
 
@@ -52,6 +67,7 @@ public class Dictionary {
 
 
     }
+
 
 
     public String FindByKeyword(String word){
@@ -274,11 +290,27 @@ public void resetDefaultSlangword() throws IOException {
     }
     filereset.renameTo(fileslang);
 }
-
+public void randomWord(){
+     Random generator= new Random();
+     Object[] word = this.data.keySet().toArray();
+     Object random= word[generator.nextInt(word.length)];
+     System.out.print("Slang word random: " + random.toString());
+}
+public void QuizFindDefinition (){
+    Random generator= new Random();
+    Object[] word = this.data.keySet().toArray();
+    Object random= word[generator.nextInt(word.length)];
+    String slang =random.toString();
+    String answer=this.data.get(slang).get(1);
+    Object[] word1 = this.data.values().toArray();
+    for (int i=0;i<=2;i++){
+        Object random1= word[generator.nextInt(word.length)];
+    }
+    }
 
     public static void main(String args[]) throws IOException {
         Dictionary d = new Dictionary();
-        d.readSlang("D:\\1653071_SlangDictionary\\slang.txt");
+        d.readSlang("D:\\1653071_SlangDictionary\\slangDefault.txt");
 
 
         int choiceNumber;
@@ -351,6 +383,8 @@ public void resetDefaultSlangword() throws IOException {
                 case 6:
                     d.resetDefaultSlangword();
                     break;
+                case 8:
+                    d.randomWord();
             }
         }
     }

@@ -4251,6 +4251,7 @@ JAT`Just A Thought
 TNOP`Totally Not Our Problem
 JAS`Just A Second
 DAGGY`Uncool||not|trendy||untidy
+SCHOOL`School
 CMAR`Cry Me A River
 INRS`It's Not Rocket Science
 UA4I`You Asked For It
@@ -7638,4 +7639,3 @@ DHCP`Dynamic Host Configuration Protocol
 BAO`BeAwareOf
 SCA`Scandal
 BAU`Business As Usual
-SCH`School

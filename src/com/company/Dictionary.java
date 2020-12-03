@@ -111,6 +111,7 @@ public class Dictionary {
         filewrite.newLine();
         filewrite.write(word);
         filewrite.close();
+
     }
     public void ReadHistory() throws IOException {
         File file = new File("D:\\1653071_SlangDictionary\\history.txt");
@@ -125,6 +126,7 @@ public class Dictionary {
                 break;
             }
         }
+        br.close();
     }
     public void DeleteWord(String word) throws IOException {
         try {
@@ -281,7 +283,7 @@ public void EditDefinition (String word) throws IOException {
                             if (i == 0) {
                                 filewrite.write(entry1.getValue().get(i));
                             } else {
-                                filewrite.write("|" + entry1.getValue().get(i));
+                                filewrite.write("| " + entry1.getValue().get(i));
                             }
                         }
                         filewrite.newLine();
@@ -296,11 +298,11 @@ public void EditDefinition (String word) throws IOException {
                 }
                 System.out.println("HashMap1: " + this.data);
 
-                System.out.print("Delete successful");
+
                 filewrite.close();
                 File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
                 if(fileslang.delete()){
-                    System.out.println(fileslang.getName() + " is deleted!");
+                    System.out.print("Edit successful");
                 }
                 file.renameTo(fileslang);
 
@@ -312,7 +314,7 @@ public void EditDefinition (String word) throws IOException {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("Word don't already in dictionary");
+            System.out.println("Word isnn't in dictionary");
         }
     }catch (IOException e) {
         System.out.println("Error");
@@ -334,9 +336,12 @@ public void EditSlangword(String word) throws IOException {
     }
     if (haveword == true) {
         this.data.remove(str1);
-        ArrayList data1 = new ArrayList<>();
-        deleteword = entry.getKey();
-        this.data.put(word, data);
+        this.data.remove(str1);
+        System.out.println("Edit "+ word +"to: ");
+        Scanner sc = new Scanner(System.in);
+        String edit = sc.nextLine();
+
+        this.data.put(edit, data);
         File file = new File("D:\\1653071_SlangDictionary\\file.txt");
         file.createNewFile();
         BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
@@ -353,7 +358,7 @@ public void EditSlangword(String word) throws IOException {
                         if (i == 0) {
                             filewrite.write(entry1.getValue().get(i));
                         } else {
-                            filewrite.write("|" + entry1.getValue().get(i));
+                            filewrite.write("| " + entry1.getValue().get(i));
                         }
                     }
                     filewrite.newLine();
@@ -366,13 +371,13 @@ public void EditSlangword(String word) throws IOException {
                 }
 
             }
-            System.out.println("HashMap1: " + this.data);
 
-            System.out.print("Delete successful");
+
+            System.out.print("Edit successful");
             filewrite.close();
             File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
             if(fileslang.delete()){
-                System.out.println(fileslang.getName() + " is deleted!");
+                System.out.print("Edit successful");
             }
             file.renameTo(fileslang);
 
@@ -509,7 +514,7 @@ public void QuizFindDefinition (){
                     do {
                         System.out.print("1 to edit definition,2 to edit slang");
                         num= scanner.nextInt();
-                    }while (num<1||num>2);
+
                     System.out.println(" ");
                     if (num==1) {
                         System.out.println("Slang word want to edit definition: ");
@@ -520,9 +525,11 @@ public void QuizFindDefinition (){
                     if (num==2)
                     {
                         System.out.println("Slang word want to edit slang word: ");
-                        String slang = scanner.nextLine();
+                        Scanner scanner1 = new Scanner(System.in);
+                        String slang = scanner1.nextLine();
                         d.EditSlangword(slang);
                     }
+                    }while (num<1||num>2);
                     break;
                 case 6:
                     System.out.println("---Delete word---");

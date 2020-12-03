@@ -434,20 +434,20 @@ public void resetDefaultSlangword() throws IOException {
     File slangDefault= new File("D:\\1653071_SlangDictionary\\slangdefault.txt");
     filereset.createNewFile();
     FileReader fr = new FileReader(slangDefault);
-    BufferedReader rr = new BufferedReader(fr);
+    BufferedReader br = new BufferedReader(fr);
     FileWriter fw =new FileWriter(filereset);
-    BufferedWriter ww= new BufferedWriter(fw);
+    BufferedWriter bw= new BufferedWriter(fw);
     String str ;
-        while ((str = rr.readLine()) != null) {
-            ww.write(str);
-            ww.newLine();
+        while ((str = br.readLine()) != null) {
+            bw.write(str);
+            bw.newLine();
 
         }
-        ww.close();
-        rr.close();
+        bw.close();
+        br.close();
     File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
     if(fileslang.delete()){
-        System.out.println(fileslang.getName() + " is deleted!");
+        System.out.println("Reset to default");
     }
     filereset.renameTo(fileslang);
 }
@@ -605,8 +605,18 @@ public void QuizFindDefinition (){
 
                     break;
                 case 8:
-                    System.out.println("---Random slang word---");
-                    d.randomWord();
+                    System.out.println("----Random-----");
+                    String random= "";
+                    Scanner sc= new Scanner(System.in);
+                    do {
+                        System.out.println("Enter to random or input any key to esc: ");
+                        random=sc.nextLine();
+                        d.randomWord();
+                        System.out.println("");
+                    }while (random.isEmpty());
+
+
+                    break;
                 case 9:
                     System.exit(0); // thoát chương trình
                     break;

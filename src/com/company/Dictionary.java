@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.io.*;
 public class Dictionary {
@@ -38,7 +40,7 @@ public class Dictionary {
                     s1 = str.split("[`]");
 
                     if (s1[1].indexOf("|") != -1 ) {
-                        String[] s2 = s1[1].split("[|]");
+                        String[] s2 = s1[1].split("[| ]");
 
                         for (int i = 0; i < s2.length; i++) {
                             data1.add(s2[i]);
@@ -48,7 +50,7 @@ public class Dictionary {
                     }
                     else{
                         data1.add(s1[1]);
-                        data1.add("Dont have 2 define");
+
                         this.data.put(s1[0], data1);
                     }
                 }
@@ -62,6 +64,8 @@ public class Dictionary {
             }
 
         System.out.println("HashMap1: " + this.data);
+            br.close();
+            fr.close();
 
 
 
@@ -122,62 +126,70 @@ public class Dictionary {
             }
         }
     }
-    public void DeleteWord(String word)  {
+    public void DeleteWord(String word) throws IOException {
         try {
 
             File file = new File("D:\\1653071_SlangDictionary\\file.txt");
-            file.createNewFile();
-            BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
-            String deleteword = "";
-            for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-                String str = entry.getKey();
-                if (str.contentEquals(word)) {
-                    deleteword= entry.getKey();
-                    break;
+            if(file.createNewFile()) {
+                BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
+                String deleteword = "";
+                for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+                    String str = entry.getKey();
+                    if (str.contentEquals(word)) {
+                        deleteword = entry.getKey();
+                        break;
+                    }
                 }
-            }
-            if (deleteword.isEmpty()) {
-                System.out.print("Not have word in dictionary");
-            }
-            else{
-            this.data.remove(deleteword);
+                if (deleteword.isEmpty()) {
+                    System.out.print("Not have word in dictionary");
+                } else {
+                    this.data.remove(deleteword);
 
                     try {
                         for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
-                            if (entry1.getValue().get(1).equals("Dont have 2 define")) {
+                            if (entry1.getValue().size() == 1) {
                                 filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
-                                filewrite.newLine();
-                            } else if (entry1.getValue().get(1).equals("ErrorValue")) {
-                                filewrite.write(entry1.getKey());
-                                filewrite.newLine();
-                            }else{
 
+                                filewrite.newLine();
+                            } else if (entry1.getValue().size() > 1) {
                                 filewrite.write(entry1.getKey() + "`");
 
-                                for (int i=0;i< entry1.getValue().size();i++) {
-                                    filewrite.write( entry1.getValue().get(i) + "| ");
+                                for (int i = 0; i < entry1.getValue().size(); i++) {
+                                    if (i == 0) {
+                                        filewrite.write(entry1.getValue().get(i));
+                                    } else {
+                                        filewrite.write("|" + entry1.getValue().get(i));
+                                    }
                                 }
                                 filewrite.newLine();
+                            } else {
+
+
+                                filewrite.write(entry1.getKey());
+                                filewrite.newLine();
+
                             }
 
                         }
+                        System.out.println("HashMap1: " + this.data);
 
                         System.out.print("Delete successful");
                         filewrite.close();
                         File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
                         if(fileslang.delete()){
-                            System.out.println(file.getName() + " is deleted!");
+                            System.out.println(fileslang.getName() + " is deleted!");
                         }
                         file.renameTo(fileslang);
 
 
-                       // file.renameTo(file);
 
-                    }catch(IOException e)
-                    {
+
+
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+            }
         } catch (IOException e) {
             System.out.println("Error");
 
@@ -218,83 +230,104 @@ public void AddNewWord(String slang,ArrayList<String> d) throws IOException {
 
     }
 }
-public void EditDefinition (String word, String newdefinition) throws IOException {
-    boolean haveword = false ;
-    ArrayList data = new ArrayList<>();
-    String str1="";
-    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-        str1= entry.getKey();
-        if (str1.equals(word)){
-
-
-            for(int i=0;i<entry.getValue().size();i++)
-            {
-                data.add(entry.getValue().get(i));
-            }
-            haveword=true;
-            break;
-        }
-    }
-    if (haveword==true) {
-        ArrayList data2 = new ArrayList<>();
-        ArrayList Edit = new ArrayList<>();
-        for (int i = 0; i < data.size(); i++) {
-            System.out.println("Input your edition or enter when don't input anything to next");
-            System.out.println("You want chance definition " + i + data.get(i) + "of" + word + ":");
-            Scanner sc = new Scanner(System.in);
-            String str = sc.nextLine();
-
-            if (!str.isEmpty()) {
-                Edit.add((str));
-
-            } else {
-                Edit.add(data.get(i));
-            }
-        }
-
-        this.data.replace(word, data2, Edit);
-        File file = new File("D:\\1653071_SlangDictionary\\file.txt");
-        file.createNewFile();
-        BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
-
-        try {
-            for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
-                if (entry1.getValue().get(1).equals("Dont have 2 define")) {
-                    filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
-                    filewrite.newLine();
-                } else if (entry1.getValue().get(1).equals("ErrorValue")) {
-                    filewrite.write(entry1.getKey());
-                    filewrite.newLine();
-                } else {
-
-                    filewrite.write(entry1.getKey() + "`");
-
-                    for (int i = 0; i < entry1.getValue().size(); i++) {
-                        filewrite.write(entry1.getValue().get(i) + "| ");
-                    }
-                    filewrite.newLine();
+public void EditDefinition (String word) throws IOException {
+    try {
+        boolean haveword = false;
+        ArrayList data = new ArrayList<>();
+        String str1 = "";
+        for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+            str1 = entry.getKey();
+            if (str1.equalsIgnoreCase(word)) {
+                for (int i = 0; i < entry.getValue().size(); i++) {
+                    data.add(entry.getValue().get(i));
+                    System.out.println(entry.getValue().get(i));
                 }
-
+                haveword = true;
+                break;
             }
-            filewrite.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-    }
-    else {
-        System.out.println("Word don't already in dictionary");
+        if (haveword == true) {
+
+            ArrayList Edit = new ArrayList<>();
+            for (int i = 0; i < data.size(); i++) {
+                System.out.println("Input your edition or enter when don't input anything to next");
+                System.out.println("You want chance definition " + (i + 1) + " " + data.get(i) + " of " + word + ":");
+                Scanner sc = new Scanner(System.in);
+                String str = sc.nextLine();
+
+                if (!str.isEmpty()) {
+                    Edit.add((str));
+
+                } else {
+                    Edit.add(data.get(i));
+                }
+            }
+
+            this.data.put(word, Edit);
+            File file = new File("D:\\1653071_SlangDictionary\\file.txt");
+            file.createNewFile();
+            BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
+
+            try {
+                for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
+                    if (entry1.getValue().size() == 1) {
+                        filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
+
+                        filewrite.newLine();
+                    } else if (entry1.getValue().size() > 1) {
+                        filewrite.write(entry1.getKey() + "`");
+
+                        for (int i = 0; i < entry1.getValue().size(); i++) {
+                            if (i == 0) {
+                                filewrite.write(entry1.getValue().get(i));
+                            } else {
+                                filewrite.write("|" + entry1.getValue().get(i));
+                            }
+                        }
+                        filewrite.newLine();
+                    } else {
+
+
+                        filewrite.write(entry1.getKey());
+                        filewrite.newLine();
+
+                    }
+
+                }
+                System.out.println("HashMap1: " + this.data);
+
+                System.out.print("Delete successful");
+                filewrite.close();
+                File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
+                if(fileslang.delete()){
+                    System.out.println(fileslang.getName() + " is deleted!");
+                }
+                file.renameTo(fileslang);
+
+
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Word don't already in dictionary");
+        }
+    }catch (IOException e) {
+        System.out.println("Error");
+
     }
 }
 public void EditSlangword(String word) throws IOException {
     boolean haveword = false;
     String str1 = "";
-
+    ArrayList data = new ArrayList<>();
     for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
         str1 = entry.getKey();
-        if (str1.equals(word)) {
-            str2 = entry.getValue().get(0);
-            str3 = entry.getValue().get(0);
+        if (str1.equalsIgnoreCase(word)) {
+            data = entry.getValue();
+
             haveword = true;
             break;
         }
@@ -302,29 +335,56 @@ public void EditSlangword(String word) throws IOException {
     if (haveword == true) {
         this.data.remove(str1);
         ArrayList data1 = new ArrayList<>();
-        data1.add(str2);
-        data1.add(str3);
-        this.data.put(word, data1);
+        deleteword = entry.getKey();
+        this.data.put(word, data);
         File file = new File("D:\\1653071_SlangDictionary\\file.txt");
         file.createNewFile();
         BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
-        for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
-            if (entry1.getValue().get(1).equals("Dont have 2 define")) {
-                filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
-                filewrite.newLine();
-            } else if (entry1.getValue().get(1).equals("ErrorValue")) {
-                filewrite.write(entry1.getKey());
-                filewrite.newLine();
-            } else {
-                filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0) + "|" + entry1.getValue().get(1));
-                filewrite.newLine();
+        try {
+            for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
+                if (entry1.getValue().size() == 1) {
+                    filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
+
+                    filewrite.newLine();
+                } else if (entry1.getValue().size() > 1) {
+                    filewrite.write(entry1.getKey() + "`");
+
+                    for (int i = 0; i < entry1.getValue().size(); i++) {
+                        if (i == 0) {
+                            filewrite.write(entry1.getValue().get(i));
+                        } else {
+                            filewrite.write("|" + entry1.getValue().get(i));
+                        }
+                    }
+                    filewrite.newLine();
+                } else {
+
+
+                    filewrite.write(entry1.getKey());
+                    filewrite.newLine();
+
+                }
+
             }
+            System.out.println("HashMap1: " + this.data);
+
+            System.out.print("Delete successful");
+            filewrite.close();
+            File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
+            if(fileslang.delete()){
+                System.out.println(fileslang.getName() + " is deleted!");
+            }
+            file.renameTo(fileslang);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        filewrite.close();
-        File fileslang = new File("D:\\1653071_SlangDictionary\\slang.txt");
-        file.renameTo(fileslang);
 
 
+        }
+
+    else{
+        System.out.println("Word already in dictionary");
     }
 }
 public void resetDefaultSlangword() throws IOException {
@@ -367,9 +427,9 @@ public void QuizFindDefinition (){
     }
     }
 
-    public static void main(String args[]) throws IOException {
+    public static  void main(String args[]) throws IOException, InterruptedException {
         Dictionary d = new Dictionary();
-        d.readSlang("D:\\1653071_SlangDictionary\\slangDefault.txt");
+        d.readSlang("D:\\1653071_SlangDictionary\\slang.txt");
 
 
         int choiceNumber;
@@ -444,11 +504,29 @@ public void QuizFindDefinition (){
                     }while (!word.isEmpty());
                     d.AddNewWord(slangword,definition);
                 case 5:
-
+                    System.out.println("-------------Edit-------------");
+                    int num;
+                    do {
+                        System.out.print("1 to edit definition,2 to edit slang");
+                        num= scanner.nextInt();
+                    }while (num<1||num>2);
+                    System.out.println(" ");
+                    if (num==1) {
+                        System.out.println("Slang word want to edit definition: ");
+                        Scanner scanner1 = new Scanner(System.in);
+                        String slang = scanner1.nextLine();
+                        d.EditDefinition(slang);
+                    }
+                    if (num==2)
+                    {
+                        System.out.println("Slang word want to edit slang word: ");
+                        String slang = scanner.nextLine();
+                        d.EditSlangword(slang);
+                    }
                     break;
                 case 6:
                     System.out.println("---Delete word---");
-                    do {
+
                         System.out.println("Input word to delete or press enter to out:");
                         Scanner sc1= new Scanner(System.in);
                         word1 = sc1.nextLine();
@@ -460,15 +538,16 @@ public void QuizFindDefinition (){
                         else{
                             System.out.println("Cancel");
                         }
-                    }while (!word1.isEmpty());
+
+
 
                     break;
                 case 7:
                     System.out.println("---Reset to default---");
-                    Scanner sc1= new Scanner(System.in);
+                    Scanner choosesc= new Scanner(System.in);
                     System.out.println("Are you sure ? yes or no : ");
-                    String choose=sc1.nextLine();
-                    if(choose.equals("yes")) {
+                    String choose1=choosesc.nextLine();
+                    if(choose1.equals("yes")) {
                         d.resetDefaultSlangword();
                     }
                     else{

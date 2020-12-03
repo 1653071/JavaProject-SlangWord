@@ -137,7 +137,7 @@ public class Dictionary {
                 String deleteword = "";
                 for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
                     String str = entry.getKey();
-                    if (str.contentEquals(word)) {
+                    if (str.equalsIgnoreCase(word)) {
                         deleteword = entry.getKey();
                         break;
                     }
@@ -203,10 +203,10 @@ public class Dictionary {
     }
 public void AddNewWord(String slang,ArrayList<String> d) throws IOException {
         Boolean haveword = false ;
-        String slang1= slang.toUpperCase();
+
     for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
         String str1= entry.getKey();
-        if (str1.equals(slang)){
+        if (str1.equalsIgnoreCase(slang)){
             haveword=true;
             break;
         }
@@ -216,19 +216,56 @@ public void AddNewWord(String slang,ArrayList<String> d) throws IOException {
     }
     else{
 
+        this.data.put(slang, d);
+        File file = new File("D:\\1653071_SlangDictionary\\file.txt");
+        file.createNewFile();
+        BufferedWriter filewrite = new BufferedWriter(new FileWriter(file));
+        try {
+            for (Map.Entry<String, ArrayList<String>> entry1 : this.data.entrySet()) {
+                if (entry1.getValue().size() == 1) {
+                    filewrite.write(entry1.getKey() + "`" + entry1.getValue().get(0));
 
-        File file = new File("D:\\1653071_SlangDictionary\\slang.txt");
-        BufferedWriter filewrite = new BufferedWriter(new FileWriter(file.getAbsoluteFile(),true));
-        filewrite.newLine();
-        filewrite.write(slang1 + "`" );
-        for (int i=0; i<d.size();i++) {
+                    filewrite.newLine();
+                } else if (entry1.getValue().size() > 1) {
+                    filewrite.write(entry1.getKey() + "`");
 
-            filewrite.write("|" + d.get(i));
+                    for (int i = 0; i < entry1.getValue().size(); i++) {
+                        if (i == 0) {
+                            filewrite.write(entry1.getValue().get(i));
+                        } else {
+                            filewrite.write("| " + entry1.getValue().get(i));
+                        }
+                    }
+                    filewrite.newLine();
+                } else {
 
+
+                    filewrite.write(entry1.getKey());
+                    filewrite.newLine();
+
+                }
+
+            }
+            System.out.println("HashMap1: " + this.data);
+
+
+            filewrite.close();
+            File fileslang= new File("D:\\1653071_SlangDictionary\\slang.txt");
+            if(fileslang.delete()){
+                System.out.println("ADD successful");
+            }
+            file.renameTo(fileslang);
+
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
 
-        System.out.println("Sucessful");
+
 
     }
 }
@@ -296,7 +333,7 @@ public void EditDefinition (String word) throws IOException {
                     }
 
                 }
-                System.out.println("HashMap1: " + this.data);
+
 
 
                 filewrite.close();
@@ -494,20 +531,25 @@ public void QuizFindDefinition (){
                     d.ReadHistory();
                     break;
                 case 4:
-                    String definition2;
                     System.out.println("---Add new word---");
+                    String definition1;
                     Scanner sc2 = new Scanner(System.in);
-                    System.out.print("Input slang word:");
+                    System.out.println("Input slang word:");
                     String slangword=sc2.nextLine();
                     ArrayList definition = new ArrayList<>();
                     System.out.println("Input definition:");
-                    Scanner sc = new Scanner(System.in);
-                    word = sc.nextLine();
-                    definition.add(word);
+
+                    definition1 = sc2.nextLine();
+                    definition.add(definition1);
                     do {
                         System.out.println("Have another definition?? if not enter to end : ");
-                    }while (!word.isEmpty());
+                        definition1=sc2.nextLine();
+                        if(!definition1.isEmpty()) {
+                            definition.add(definition1);
+                        }
+                    }while (!definition1.isEmpty());
                     d.AddNewWord(slangword,definition);
+                    break;
                 case 5:
                     System.out.println("-------------Edit-------------");
                     int num;
